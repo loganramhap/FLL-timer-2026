@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robotics Event Timer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="roomCodeModal" class="modal" style="display: flex;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Enter Room Code</h2>
+      </div>
+      <div class="room-code-input">
+        <input type="text" id="roomCodeInput" placeholder="Enter room code" maxlength="20" />
+        <button id="joinRoomBtn" class="btn btn-start">Join</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="timer-display">
+    <div id="timer">2:30</div>
+    <div id="roomCodeDisplay" class="room-code-badge"></div>
+  </div>
+  
+  <div class="controls">
+    <button id="startStopBtn" class="btn btn-start">START</button>
+    <button id="resetBtn" class="btn btn-reset">RESET</button>
+    <button id="settingsBtn" class="btn btn-settings">⚙️</button>
+  </div>
+
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button id="closeSettings" class="close-btn">&times;</button>
+      </div>
+      <div class="sound-upload">
+        <h3>Sound Effects</h3>
+        <div class="upload-group">
+          <label>Timer Start:</label>
+          <div class="sound-controls">
+            <input type="file" id="startSound" accept="audio/*">
+            <button class="btn-test" data-sound="start">▶️ Test</button>
+          </div>
+        </div>
+        <div class="upload-group">
+          <label>30 Seconds Left:</label>
+          <div class="sound-controls">
+            <input type="file" id="warningSound" accept="audio/*">
+            <button class="btn-test" data-sound="warning">▶️ Test</button>
+          </div>
+        </div>
+        <div class="upload-group">
+          <label>Timer End:</label>
+          <div class="sound-controls">
+            <input type="file" id="endSound" accept="audio/*">
+            <button class="btn-test" data-sound="end">▶️ Test</button>
+          </div>
+        </div>
+        <div class="upload-group">
+          <label>Timer Aborted:</label>
+          <div class="sound-controls">
+            <input type="file" id="abortSound" accept="audio/*">
+            <button class="btn-test" data-sound="abort">▶️ Test</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="status" class="status">Connecting...</div>
+
+  <script src="client.js"></script>
+</body>
+</html>
