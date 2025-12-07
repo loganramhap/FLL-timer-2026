@@ -196,6 +196,15 @@ function handleServerMessage(data) {
       playSound('abort');
       break;
     
+    case 'end':
+      stopTimer();
+      isRunning = false;
+      currentTime = 0;
+      updateDisplay(currentTime);
+      updateButtonState();
+      playSound('end');
+      break;
+    
     case 'reset':
       stopTimer();
       isRunning = false;
@@ -236,7 +245,7 @@ function startTimer(serverStartTime) {
     if (currentTime <= 0) {
       stopTimer();
       playSound('end');
-      ws.send(JSON.stringify({ type: 'stop', timeLeft: 0 }));
+      ws.send(JSON.stringify({ type: 'end', timeLeft: 0 }));
     }
   }, 100);
 }

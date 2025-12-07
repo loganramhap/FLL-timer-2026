@@ -63,6 +63,12 @@ wss.on('connection', (ws, req) => {
         }
         break;
       
+      case 'end':
+        room.isRunning = false;
+        room.timeLeft = 0;
+        broadcastToRoom(ws.roomCode, { type: 'end', timeLeft: room.timeLeft, isRunning: room.isRunning, startTime: room.startTime });
+        break;
+      
       case 'reset':
         room.timeLeft = 150;
         room.isRunning = false;
