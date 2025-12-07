@@ -30,9 +30,9 @@ function initDefaultSounds() {
   // Try to load default audio files first, fallback to beeps
   const defaultSounds = {
     start: '/sounds/start.mp3',
-    warning: '/sounds/warning.mp3',
+    warning: '/sounds/end-game.mp3',
     end: '/sounds/end.mp3',
-    abort: '/sounds/abort.mp3'
+    abort: '/sounds/stop.mp3'
   };
   
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
