@@ -30,7 +30,7 @@ app.use('/sounds', express.static('sounds'));
 
 wss.on('connection', (ws, req) => {
   const { query } = parse(req.url, true);
-  const roomCode = query.room;
+  const roomCode = query.room?.toLowerCase();
   
   if (!roomCode || roomCode.length < 3 || roomCode.length > 20) {
     ws.close();

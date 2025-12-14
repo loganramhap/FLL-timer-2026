@@ -87,11 +87,11 @@ roomCodeInput.addEventListener('keypress', (e) => {
 });
 
 function joinRoom() {
-  const code = roomCodeInput.value.trim();
+  const code = roomCodeInput.value.trim().toLowerCase();
   if (code.length >= 3 && code.length <= 20) {
     currentRoomCode = code;
     roomCodeModal.style.display = 'none';
-    roomCodeDisplay.textContent = `Room: ${code}`;
+    roomCodeDisplay.textContent = `Room: ${code.toUpperCase()}`;
     connectWebSocket();
   } else {
     alert('Please enter a room code (3-20 characters)');
