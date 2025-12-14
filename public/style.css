@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Roboto Mono', monospace;
   background: #000000;
   color: white;
   min-height: 100vh;
@@ -26,9 +26,9 @@ body {
 
 #timer {
   font-size: 25vw;
-  font-weight: bold;
+  font-weight: 700;
   text-align: center;
-  font-family: 'Courier New', monospace;
+  font-family: 'Roboto Mono', monospace;
   letter-spacing: 0.1em;
   transition: all 0.3s ease;
   color: #00ff00;
@@ -196,7 +196,7 @@ body {
   border-radius: 8px;
   background: #2a2a2a;
   color: white;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .room-code-input input:focus {
@@ -213,7 +213,7 @@ body {
   border: 2px solid #4caf50;
   border-radius: 8px;
   font-size: 18px;
-  font-family: 'Courier New', monospace;
+  font-family: 'Roboto Mono', monospace;
   letter-spacing: 0.2em;
   color: #4caf50;
 }
