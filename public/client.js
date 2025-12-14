@@ -90,6 +90,13 @@ function joinRoom() {
   const code = roomCodeInput.value.trim().toLowerCase();
   if (code.length >= 3 && code.length <= 20) {
     currentRoomCode = code;
+    // Store room code with TTL (24 hours)
+    const roomData = {
+      code: code,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('roomCode', JSON.stringify(roomData));
+    
     roomCodeModal.style.display = 'none';
     roomCodeDisplay.textContent = `Room: ${code.toUpperCase()}`;
     connectWebSocket();
@@ -97,6 +104,49 @@ function joinRoom() {
     alert('Please enter a room code (3-20 characters)');
   }
 }
+
+function loadSavedRoomCode() {
+  const savedRoom = localStorage.getItem('roomCode');
+  if (savedRoom) {
+    try {
+      const roomData = JSON.parse(savedRoom);
+      const TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      
+      if (Date.now() - roomData.timestamp < TTL) {
+        // Room code is still valid
+        currentRoomCode = roomData.code;
+        roomCodeModal.style.display = 'none';
+        roomCodeDisplay.textContent = `Room: ${roomData.code.toUpperCase()}`;
+        connectWebSocket();
+        return true;
+      } else {
+        // Room code expired, remove it
+        localStorage.removeItem('roomCode');
+      }
+    } catch (e) {
+      // Invalid data, remove it
+      localStorage.removeItem('roomCode');
+    }
+  }
+  return false;
+}
+
+// Room code badge click handler
+roomCodeDisplay.addEventListener('click', () => {
+  // Clear current connection
+  if (ws) {
+    ws.close();
+  }
+  // Clear saved room code
+  localStorage.removeItem('roomCode');
+  // Reset state
+  currentRoomCode = null;
+  roomCodeInput.value = '';
+  // Show room code modal
+  roomCodeModal.style.display = 'flex';
+  statusDiv.textContent = 'Disconnected';
+  statusDiv.className = 'status disconnected';
+});
 
 // Settings modal handlers
 settingsBtn.addEventListener('click', () => {
@@ -299,4 +349,7 @@ resetBtn.addEventListener('click', () => {
 
 // Initialize
 initDefaultSounds();
-// Don't auto-connect, wait for room code
+// Try to load saved room code, otherwise show room code modal
+if (!loadSavedRoomCode()) {
+  roomCodeModal.style.display = 'flex';
+}
