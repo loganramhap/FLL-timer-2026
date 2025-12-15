@@ -49,6 +49,15 @@ wss.on('connection', (ws, req) => {
     const room = getRoom(ws.roomCode);
     
     switch(data.type) {
+      case 'sync':
+        // Send server time back for clock synchronization
+        ws.send(JSON.stringify({ 
+          type: 'sync', 
+          serverTime: Date.now(),
+          clientTime: data.clientTime 
+        }));
+        break;
+        
       case 'start':
         room.isRunning = true;
         room.startTime = Date.now();

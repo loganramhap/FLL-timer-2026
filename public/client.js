@@ -16,6 +16,7 @@ let currentTime = 150;
 let warningPlayed = false;
 let currentRoomCode = null;
 let isRunning = false;
+let clockOffset = 0; // Difference between server and client time
 
 // Audio management with default sounds
 const audioFiles = {
@@ -202,6 +203,8 @@ function connectWebSocket() {
   ws.onopen = () => {
     statusDiv.textContent = 'Connected';
     statusDiv.className = 'status connected';
+    // Sync clock with server
+    syncClock();
   };
   
   ws.onclose = () => {
@@ -216,8 +219,20 @@ function connectWebSocket() {
   };
 }
 
+function syncClock() {
+  const clientTime = Date.now();
+  ws.send(JSON.stringify({ type: 'sync', clientTime }));
+}
+
 function handleServerMessage(data) {
   switch(data.type) {
+    case 'sync':
+      // Calculate clock offset for better synchronization
+      const roundTripTime = Date.now() - data.clientTime;
+      clockOffset = data.serverTime - Date.now() + (roundTripTime / 2);
+      console.log(`Clock sync: offset ${clockOffset}ms`);
+      break;
+      
     case 'state':
       currentTime = data.timeLeft;
       isRunning = data.isRunning;
@@ -280,7 +295,9 @@ function startTimer(serverStartTime) {
   stopTimer();
   
   timerInterval = setInterval(() => {
-    const elapsed = Math.floor((Date.now() - serverStartTime) / 1000);
+    // Use server time for more accurate synchronization
+    const now = Date.now() + clockOffset;
+    const elapsed = Math.floor((now - serverStartTime) / 1000);
     currentTime = Math.max(0, 150 - elapsed);
     
     updateDisplay(currentTime);
@@ -297,7 +314,7 @@ function startTimer(serverStartTime) {
       playSound('end');
       ws.send(JSON.stringify({ type: 'end', timeLeft: 0 }));
     }
-  }, 100);
+  }, 50); // Update more frequently for smoother display
 }
 
 function stopTimer() {
