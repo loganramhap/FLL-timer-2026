@@ -192,15 +192,21 @@ function handleSoundUpload(event, type) {
 
 function playSound(type) {
   if (audioFiles[type]) {
-    // Clone audio for overlapping sounds
-    if (audioFiles[type].play) {
-      const sound = audioFiles[type].cloneNode ? audioFiles[type].cloneNode() : audioFiles[type];
-      sound.currentTime = 0;
-      sound.play().catch(e => console.log('Audio play failed:', e));
-    } else {
-      // For beep sounds
-      audioFiles[type].play();
+    try {
+      // Clone audio for overlapping sounds
+      if (audioFiles[type].cloneNode) {
+        const sound = audioFiles[type].cloneNode();
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log('Audio play failed:', e));
+      } else if (audioFiles[type].play) {
+        // For beep sounds
+        audioFiles[type].play();
+      }
+    } catch (e) {
+      console.log('Sound playback error:', e);
     }
+  } else {
+    console.log(`Sound '${type}' not loaded yet`);
   }
 }
 
@@ -259,8 +265,8 @@ function handleServerMessage(data) {
       warningPlayed = false;
       startTimer(data.startTime);
       updateButtonState();
-      // Don't play sound here if we're the one who started it (already played on button click)
-      // Other clients will still hear it
+      // Play sound for all clients (including the one who started it, in case it didn't play on click)
+      playSound('start');
       break;
     
     case 'stop':
@@ -364,8 +370,6 @@ startStopBtn.addEventListener('click', () => {
     if (isRunning) {
       ws.send(JSON.stringify({ type: 'stop', timeLeft: currentTime }));
     } else {
-      // Play sound immediately on button press for better responsiveness
-      playSound('start');
       ws.send(JSON.stringify({ type: 'start' }));
     }
   }
