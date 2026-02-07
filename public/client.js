@@ -41,6 +41,7 @@ function initDefaultSounds() {
   // Try to load each sound file, fallback to beep if not found
   Object.keys(defaultSounds).forEach(type => {
     const audio = new Audio(defaultSounds[type]);
+    audio.preload = 'auto'; // Preload audio files
     audio.addEventListener('error', () => {
       // Fallback to beep sounds if file doesn't exist
       const frequencies = { start: 800, warning: 1000, end: 600, abort: 400 };
@@ -51,6 +52,8 @@ function initDefaultSounds() {
     audio.addEventListener('canplaythrough', () => {
       audioFiles[type] = audio;
     }, { once: true });
+    // Start loading immediately
+    audio.load();
   });
 }
 
@@ -189,8 +192,15 @@ function handleSoundUpload(event, type) {
 
 function playSound(type) {
   if (audioFiles[type]) {
-    audioFiles[type].currentTime = 0;
-    audioFiles[type].play().catch(e => console.log('Audio play failed:', e));
+    // Clone audio for overlapping sounds
+    if (audioFiles[type].play) {
+      const sound = audioFiles[type].cloneNode ? audioFiles[type].cloneNode() : audioFiles[type];
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log('Audio play failed:', e));
+    } else {
+      // For beep sounds
+      audioFiles[type].play();
+    }
   }
 }
 
@@ -249,7 +259,8 @@ function handleServerMessage(data) {
       warningPlayed = false;
       startTimer(data.startTime);
       updateButtonState();
-      playSound('start');
+      // Don't play sound here if we're the one who started it (already played on button click)
+      // Other clients will still hear it
       break;
     
     case 'stop':
@@ -353,6 +364,8 @@ startStopBtn.addEventListener('click', () => {
     if (isRunning) {
       ws.send(JSON.stringify({ type: 'stop', timeLeft: currentTime }));
     } else {
+      // Play sound immediately on button press for better responsiveness
+      playSound('start');
       ws.send(JSON.stringify({ type: 'start' }));
     }
   }
